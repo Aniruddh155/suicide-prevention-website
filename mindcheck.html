@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MindCheck — Mental Health Check-in &amp; Support</title>
+<style>
+  :root{
+    --bg:#f6f5f2; --card:#ffffff; --ink:#20242b; --muted:#5a6270;
+    --accent:#3d6a5c; --accent-light:#e7f0ec; --danger:#b3413a; --danger-light:#fbe9e7;
+    --border:#e3e1db; --radius:16px;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+    box-sizing:border-box;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171a1d; --card:#20242a; --ink:#eceef0; --muted:#a0a7b0;
+      --accent:#6fae9a; --accent-light:#23332e; --danger:#e0847c; --danger-light:#3a2422; --border:#333a41;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#171a1d; --card:#20242a; --ink:#eceef0; --muted:#a0a7b0;
+    --accent:#6fae9a; --accent-light:#23332e; --danger:#e0847c; --danger-light:#3a2422; --border:#333a41;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    line-height:1.5;
+  }
+  .crisis-bar{
+    position:sticky; top:0; z-index:50;
+    background:var(--danger-light); color:var(--danger);
+    padding:calc(env(safe-area-inset-top,0px) + 8px) 14px 8px;
+    font-size:13px; text-align:center; border-bottom:1px solid var(--border);
+  }
+  .crisis-bar b{color:var(--danger);}
+  .crisis-bar a{color:var(--danger); font-weight:600;}
+  nav{
+    display:flex; gap:6px; padding:10px 14px; background:var(--card);
+    border-bottom:1px solid var(--border); position:sticky; top:32px; z-index:40;
+    overflow-x:auto;
+  }
+  nav button{
+    border:none; background:transparent; color:var(--muted); font-size:14px;
+    padding:8px 14px; border-radius:999px; cursor:pointer; white-space:nowrap;
+  }
+  nav button.active{ background:var(--accent); color:#fff; }
+  main{ max-width:640px; margin:0 auto; padding:20px 16px 60px; }
+  .page{ display:none; } .page.active{ display:block; }
+  h1{ font-size:22px; margin:6px 0 4px; }
+  h2{ font-size:17px; margin:0 0 8px; }
+  p.sub{ color:var(--muted); font-size:14px; margin-top:0; }
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin-bottom:16px;
+  }
+  .btn{
+    display:inline-block; background:var(--accent); color:#fff; border:none;
+    padding:12px 20px; border-radius:10px; font-size:15px; cursor:pointer; font-weight:600;
+  }
+  .btn.secondary{ background:transparent; color:var(--accent); border:1px solid var(--accent); }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+  .qopt{
+    display:block; width:100%; text-align:left; padding:12px 14px; margin:6px 0;
+    border:1px solid var(--border); border-radius:10px; background:var(--bg);
+    color:var(--ink); cursor:pointer; font-size:14.5px;
+  }
+  .qopt.selected{ border-color:var(--accent); background:var(--accent-light); }
+  .progress{ height:6px; border-radius:6px; background:var(--border); overflow:hidden; margin-bottom:14px;}
+  .progress > div{ height:100%; background:var(--accent); transition:width .25s; }
+  .helpline{ border-bottom:1px solid var(--border); padding:12px 0; }
+  .helpline:last-child{ border-bottom:none; }
+  .helpline .name{ font-weight:600; }
+  .helpline .meta{ color:var(--muted); font-size:13px; }
+  .helpline a{ color:var(--accent); text-decoration:none; font-weight:600; }
+  .tag{ display:inline-block; background:var(--accent-light); color:var(--accent); font-size:12px;
+        padding:3px 9px; border-radius:999px; margin-right:6px; margin-bottom:6px; }
+  .band{ padding:14px; border-radius:12px; margin-bottom:10px; }
+  .band h3{ margin:0 0 4px; font-size:15px; }
+  footer{ text-align:center; color:var(--muted); font-size:12px; padding:20px; }
+  .placeholder-note{
+    background:var(--accent-light); border:1px dashed var(--accent); border-radius:10px;
+    padding:10px 12px; font-size:13px; color:var(--muted); margin-bottom:14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="crisis-bar">
+  In danger right now? Call <b>112</b> (India emergency) or <b>KIRAN 1800-599-0019</b> — free, 24/7.
+</div>
+
+<nav>
+  <button class="navbtn active" data-page="home">Home</button>
+  <button class="navbtn" data-page="quiz">Check-in Quiz</button>
+  <button class="navbtn" data-page="help">Find Help</button>
+</nav>
+
+<main>
+
+  <!-- HOME -->
+  <section id="home" class="page active">
+    <h1>You don't have to carry this alone</h1>
+    <p class="sub">A quiet space to check in with yourself and find real support.</p>
+    <div class="card">
+      <h2>What this site offers</h2>
+      <p>A short, private self check-in on stress, mood, anxiety and sleep — and a page of verified helplines and psychologists in India who can actually help. Nothing you enter here is a diagnosis; it's a starting point for a conversation with a real professional.</p>
+      <button class="btn" onclick="goPage('quiz')">Start the check-in</button>
+      <button class="btn secondary" onclick="goPage('help')" style="margin-left:8px;">Skip to helplines</button>
+    </div>
+    <div class="card">
+      <h2>If you're struggling right now</h2>
+      <p>Please don't wait for a quiz result. Reach out to someone now:</p>
+      <ul>
+        <li><b>KIRAN (Govt. of India):</b> 1800-599-0019 — 24/7, 13 languages</li>
+        <li><b>Vandrevala Foundation:</b> +91 9999 666 555 — call or WhatsApp, 24/7</li>
+        <li><b>iCall (TISS):</b> 022-2552 1111 — Mon–Sat, 8am–10pm</li>
+        <li><b>Emergency:</b> 112</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="page">
+    <div id="quizIntro">
+      <h1>Mental Health Check-in</h1>
+      <p class="sub">14 short questions, about 3 minutes. This reflects patterns over the <b>last 2 weeks</b>.</p>
+      <div class="card">
+        <p><b>This is not a diagnosis.</b> It's a self-reflection tool inspired by widely used screening questionnaires. Only a qualified mental health professional can assess and diagnose a condition. Your answers stay in this browser only — nothing is sent anywhere.</p>
+        <button class="btn" onclick="startQuiz()">Begin</button>
+      </div>
+    </div>
+
+    <div id="quizBody" style="display:none;">
+      <div class="progress"><div id="progressBar" style="width:0%"></div></div>
+      <div class="card">
+        <h2 id="qText"></h2>
+        <div id="qOptions"></div>
+      </div>
+      <button class="btn secondary" id="backBtn" onclick="prevQ()">Back</button>
+    </div>
+
+    <div id="quizResult" style="display:none;"></div>
+  </section>
+
+  <!-- HELP -->
+  <section id="help" class="page">
+    <h1>Find Help in India</h1>
+    <p class="sub">Verified crisis lines first, then how to find an ongoing psychologist.</p>
+
+    <div class="card">
+      <h2>Crisis &amp; support helplines</h2>
+      <div class="helpline">
+        <div class="name">KIRAN — Govt. of India Mental Health Helpline</div>
+        <div class="meta">24/7 · Free · 13 languages · Anxiety, depression, suicidal thoughts, PTSD, substance use</div>
+        <a href="tel:18005990019">1800-599-0019</a>
+      </div>
+      <div class="helpline">
+        <div class="name">Vandrevala Foundation</div>
+        <div class="meta">24/7 · Free · Call or WhatsApp</div>
+        <a href="tel:+919999666555">+91 9999 666 555</a>
+      </div>
+      <div class="helpline">
+        <div class="name">iCall (Tata Institute of Social Sciences)</div>
+        <div class="meta">Mon–Sat, 8am–10pm · Phone, email &amp; chat counselling</div>
+        <a href="tel:02225521111">022-2552 1111</a> · icall@tiss.edu
+      </div>
+      <div class="helpline">
+        <div class="name">Sanjivini Society for Mental Health (Delhi)</div>
+        <div class="meta">Daily, 10am–4pm</div>
+        <a href="tel:01140769002">011-4076 9002</a>
+      </div>
+      <div class="helpline">
+        <div class="name">Emergency Services</div>
+        <div class="meta">Police, ambulance, fire</div>
+        <a href="tel:112">112</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Talk to a psychologist</h2>
+      <div class="placeholder-note">
+        This section is a template — add the names, specialties and contact details of psychologists or clinics you trust or have vetted locally. Real listings shouldn't be invented, so start from a verified directory:
+        <br>• <a href="https://www.icallhelpline.org/" target="_blank" style="color:var(--accent)">iCall's counsellor directory</a>
+        <br>• Your state psychological association or a hospital's psychiatry/psychology department
+        <br>• A doctor's referral
+      </div>
+
+      <div class="helpline">
+        <span class="tag">Example</span>
+        <div class="name">[Psychologist Name]</div>
+        <div class="meta">Specialty: e.g. anxiety, adolescent counselling · Mode: In-person / Online</div>
+        <div class="meta">Phone: [add number] · Email: [add email] · Fees: [add range]</div>
+      </div>
+      <div class="helpline">
+        <span class="tag">Example</span>
+        <div class="name">[Clinic / Wellness Center Name]</div>
+        <div class="meta">Location: [add city/area] · Languages: [add languages]</div>
+        <div class="meta">Phone: [add number] · Booking link: [add URL]</div>
+      </div>
+      <p class="sub">Duplicate the block above (in the HTML) for each real professional you want to list, and remove the "Example" tag once filled in.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>Not a substitute for professional care. If you or someone else is in immediate danger, call 112.</footer>
+
+<script>
+const questions = [
+  {domain:"mood", text:"Over the last 2 weeks, how often have you felt down, low, or had little interest in things you usually enjoy?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"mood", text:"How often have you felt tired or had very little energy?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"mood", text:"How often has your appetite or sleep been noticeably off (too much or too little)?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"mood", text:"How often have you felt like a failure, or that you've let yourself or others down?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"anxiety", text:"How often have you felt nervous, anxious, or on edge?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"anxiety", text:"How often have you been unable to stop or control worrying?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"anxiety", text:"How often have you had trouble relaxing?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"stress", text:"How often have you felt overwhelmed by daily responsibilities?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"stress", text:"How often have you felt irritable or on-edge with people around you?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"sleep", text:"How would you rate your sleep quality lately?", opts:["Good, restful","Okay, some trouble","Poor, frequently disrupted","Very poor, barely sleeping"]},
+  {domain:"social", text:"How often have you pulled away from friends, family, or activities you used to care about?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"concentration", text:"How often has it been hard to concentrate on things like reading, work, or conversations?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"selfworth", text:"How often have you felt worthless or overly critical of yourself?", opts:["Not at all","A few days","More than half the days","Nearly every day"]},
+  {domain:"risk", text:"Have you had thoughts that you'd be better off not here, or of hurting yourself?", opts:["Never","Rarely, fleeting","Sometimes, they linger","Often, or with a plan"]}
+];
+
+let current = 0, answers = new Array(questions.length).fill(null);
+
+function goPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.getElementById(p).classList.add('active');
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.page===p));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.navbtn').forEach(b=>b.addEventListener('click',()=>goPage(b.dataset.page)));
+
+function startQuiz(){
+  current = 0; answers = new Array(questions.length).fill(null);
+  document.getElementById('quizIntro').style.display='none';
+  document.getElementById('quizResult').style.display='none';
+  document.getElementById('quizBody').style.display='block';
+  renderQ();
+}
+
+function renderQ(){
+  const q = questions[current];
+  document.getElementById('progressBar').style.width = Math.round((current/questions.length)*100)+"%";
+  document.getElementById('qText').textContent = (current+1)+". "+q.text;
+  const optsEl = document.getElementById('qOptions');
+  optsEl.innerHTML = "";
+  q.opts.forEach((opt,i)=>{
+    const b = document.createElement('button');
+    b.className = 'qopt' + (answers[current]===i ? ' selected':'');
+    b.textContent = opt;
+    b.onclick = ()=>{ answers[current]=i; nextQ(); };
+    optsEl.appendChild(b);
+  });
+  document.getElementById('backBtn').style.visibility = current===0 ? 'hidden':'visible';
+}
+
+function nextQ(){
+  // Immediate crisis surfacing if the risk question shows real concern
+  const q = questions[current];
+  if(q.domain==="risk" && answers[current]>=2){
+    showCrisisNow();
+    return;
+  }
+  if(current < questions.length-1){ current++; renderQ(); }
+  else { showResult(); }
+}
+function prevQ(){ if(current>0){ current--; renderQ(); } }
+
+function showCrisisNow(){
+  document.getElementById('quizBody').style.display='none';
+  const el = document.getElementById('quizResult');
+  el.style.display='block';
+  el.innerHTML = `
+    <div class="card" style="border-color:var(--danger); background:var(--danger-light);">
+      <h2 style="color:var(--danger);">Please reach out right now</h2>
+      <p>What you just shared matters, and it deserves more than a quiz result. Please talk to someone now — you don't have to explain everything, just start the call.</p>
+      <p><b>KIRAN (24/7):</b> <a href="tel:18005990019">1800-599-0019</a><br>
+      <b>Vandrevala Foundation (24/7):</b> <a href="tel:+919999666555">+91 9999 666 555</a><br>
+      <b>Emergency:</b> <a href="tel:112">112</a></p>
+      <p>If you're with someone you trust, consider letting them know how you're feeling too.</p>
+      <button class="btn" onclick="goPage('help')">See all helplines</button>
+    </div>`;
+}
+
+function showResult(){
+  document.getElementById('quizBody').style.display='none';
+  const el = document.getElementById('quizResult');
+  el.style.display='block';
+
+  // score non-risk questions only, risk question handled separately if reached here (low concern)
+  const scored = questions.map((q,i)=>({domain:q.domain, val:answers[i]})).filter(q=>q.domain!=="risk");
+  const domainTotals = {};
+  scored.forEach(s=>{ domainTotals[s.domain] = (domainTotals[s.domain]||0) + s.val; });
+
+  const bands = Object.entries(domainTotals).map(([domain,total])=>{
+    let level, color;
+    if(total<=1){level="Minimal";color="var(--accent)";}
+    else if(total<=3){level="Mild";color="#c99a2e";}
+    else{level="Notable";color="var(--danger)";}
+    return {domain,level,color};
+  });
+
+  const labels = {mood:"Low mood", anxiety:"Anxiety", stress:"Stress", sleep:"Sleep", social:"Withdrawal", concentration:"Concentration", selfworth:"Self-worth"};
+
+  el.innerHTML = `
+    <div class="card">
+      <h2>Your check-in reflection</h2>
+      <p class="sub">This groups your answers by theme — it's a mirror, not a diagnosis.</p>
+      ${bands.map(b=>`
+        <div class="band" style="background:var(--bg); border:1px solid var(--border);">
+          <h3>${labels[b.domain]||b.domain} — <span style="color:${b.color}">${b.level}</span></h3>
+        </div>`).join('')}
+      <p style="margin-top:14px;">If any of these feel more than "notable" to you personally — regardless of what this shows — that's worth a real conversation with a professional. A trained psychologist can tell you far more accurately what's going on than any quiz.</p>
+      <button class="btn" onclick="goPage('help')">Find someone to talk to</button>
+      <button class="btn secondary" onclick="startQuiz()" style="margin-left:8px;">Retake</button>
+    </div>
+    <div class="card">
+      <p style="margin:0;">Feeling okay right now but know this could help someone else? Share this page with them.</p>
+    </div>`;
+}
+</script>
+</body>
+</html>
